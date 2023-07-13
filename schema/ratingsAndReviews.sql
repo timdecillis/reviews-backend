@@ -16,8 +16,6 @@ CREATE TABLE Reviews (
   PRIMARY KEY (id)
 );
 
-COPY reviews_photos FROM '/Users/theresebataclan/Desktop/SDC-Data/reviews_photos.csv' DELIMITER ',' CSV HEADER;
-
 DROP TABLE IF EXISTS Characteristics;
 
 CREATE TABLE Characteristics (
@@ -49,25 +47,3 @@ CREATE TABLE Reviews_Photos (
 ALTER TABLE Characteristics Values ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
 ALTER TABLE Characteristics Values ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
 ALTER TABLE Reviews Photos ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
-
--- ---
--- Table Properties
--- ---
-
--- ALTER TABLE `Reviews` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Characteristics Values` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Characteristics` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Reviews Photos` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- ---
--- Test Data
--- ---
-
--- INSERT INTO `Reviews` (`id`,`product_id`,`Rating`,`Date`,`Summary`,`Body`,`Recommend`,`Reported`,`Name`,`Email Address`,`Response`,`Helpfulness`) VALUES
--- ('','','','','','','','','','','','');
--- INSERT INTO `Characteristics Values` (`id`,`characteristic_id`,`review_id`,`Value`) VALUES
--- ('','','','');
--- INSERT INTO `Characteristics` (`id`,`product_id`,`Name`) VALUES
--- ('','','');
--- INSERT INTO `Reviews Photos` (`id`,`review_id`,`url`) VALUES
--- ('','','');
