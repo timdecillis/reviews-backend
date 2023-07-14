@@ -7,10 +7,10 @@ const {getReviews, getReviewMeta, addReview, addHelpful} = require('./database')
 app.use(express.json());
 app.use('/reviews', router);
 
-router.get('/', (req, res)=> {
+router.get('/:product_id', ({product_id} = req.params, res)=> {
   getReviews()
     .then((reviews) => {
-      res.status(200).send(reviews);
+      res.status(200).send(product_id);
     })
     .catch((err) => {
       console.log(err);

@@ -4,7 +4,8 @@
   "description": "",
   "private": false,
   "scripts": {
-    "start": "node server/index.js && npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "server-dev": "npx nodemon --watch server server/index.js",
+    "load": "node schema/load.js"
   },
   "keywords": [],
   "author": "",
