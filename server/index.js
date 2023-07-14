@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const db = require('./databas.js');
+const db = require('./database.js');
 const router = require('express').Router();
 const {getReviews, getReviewMeta, addReview, addHelpful} = require('./database');
 
