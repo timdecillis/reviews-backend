@@ -3,7 +3,6 @@ const path = require('path');
 const { Pool, Client } = require('pg');
 const { host, user, pw, db, port } = require('../config.js');
 
-// inputfile & target table
 const dbConfig = {
   host: host,
   user: user,
