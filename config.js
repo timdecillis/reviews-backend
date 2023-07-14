@@ -1,9 +1,7 @@
-const secrets = {
+module.exports = {
   host: 'localhost',
   user: 'postgres',
-  pw: '',
-  db: 'ratings-and-reviews',
+  pw: 'password',
+  db: 'reviews',
   port: '5432'
 };
-
-export default secrets;

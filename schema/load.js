@@ -28,7 +28,6 @@ const queries = {
   reviews_photos: `COPY reviews_photos FROM '${paths.reviews_photos}' DELIMITER ',' CSV HEADER;`
 };
 
-
 const createTables = async () =>{
   const client = new Client(dbConfig);
 
