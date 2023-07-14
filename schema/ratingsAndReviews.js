@@ -1,10 +1,3 @@
-const glossarySchema = new mongoose.Schema({
-  word: {type: String, unique: true},
-  definition: String
-});
-
-const Entry = mongoose.model('Entry', glossarySchema);
-
 const ratingsAndReviewsSchema = new mongoose.Schema({
   reviews: [{
     id: {type: Number, unique: true},
