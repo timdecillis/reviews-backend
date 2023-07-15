@@ -1,15 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { Pool, Client } = require('pg');
-const { host, user, pw, db, port } = require('../config.js');
-
-const dbConfig = {
-  host: host,
-  user: user,
-  pw: pw,
-  database: db,
-  port: port
-};
+const { Client } = require('pg');
+const { dbConfig } = require('../config.js');
 
 const paths = {
   schema: path.join(__dirname, '/createTables.sql'),
