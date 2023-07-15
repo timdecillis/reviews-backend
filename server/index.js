@@ -10,6 +10,7 @@ app.use(express.json());
 app.use('/reviews', router);
 
 router.get('/', (req, res)=> {
+  // eslint-disable-next-line camelcase
   let {product_id, sort, count, page} = req.query;
   page = page || 1;
   count = count || 5;
@@ -24,8 +25,9 @@ router.get('/', (req, res)=> {
 });
 
 router.get('/meta', (req, res) => {
+  // eslint-disable-next-line camelcase
   let {product_id} = req.query;
-  getReviewMeta()
+  getReviewMeta(product_id)
     .then((metaData) => {
       res.status(200).send(metaData);
     })
@@ -44,8 +46,10 @@ router.post('/', (req, res) => {
     });
 });
 
-router.put('/', (req, res) => {
-  addHelpful()
+router.put('/:review_id/helpful', (req, res) => {
+  let review = req.params.review_id;
+  console.log('REVIEW', review);
+  addHelpful(review)
     .then(() => {
       res.status(204).send();
     })
