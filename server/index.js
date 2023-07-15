@@ -36,8 +36,8 @@ router.get('/meta', (req, res) => {
     });
 });
 
-router.post('/:review_id', (req, res) => {
-  let {review_id} = req.params;
+router.post('/', (req, res) => {
+  let review = req.body;
   addReview(review)
     .then(() => {
       res.status(201).send();

@@ -154,8 +154,15 @@ module.exports = {
     }
   },
   addReview: async (review) => {
-    console.log('dbreview', review);
+    let {product_id, rating, summary, body, recommend, name, email, photos, characteristics} = review;
+    try {
+      await pool.query(`INSERT INTO reviews VALUES(${product_id}, ${rating}, CURRENT_TIMESTAMP, '${summary}', '${body}', ${recommend}, false, '${name}', '${email}', null, null)`);
+
+    } catch (err) {
+      console.error('Error submitting review:', err);
+    }
   },
+
   addHelpful: async (review) => {
     try {
       const helpfulQuery = await pool.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE id = ${review}`);
