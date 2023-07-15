@@ -32,12 +32,13 @@ module.exports = {
   getReviewMeta: async (product) => {
 
     let metaData = {
+      product_id: product,
       ratings: {
-        '1.00': 0,
-        '2.00': 0,
-        '3.00': 0,
-        '4.00': 0,
-        '5.00': 0
+        '1.00': '0',
+        '2.00': '0',
+        '3.00': '0',
+        '4.00': '0',
+        '5.00': '0'
       },
       recommend: {
         true: 0,
@@ -46,36 +47,56 @@ module.exports = {
       characteristics: {}
     };
 
+    charIds = [];
+
     try {
-      const ratingsQuery = await pool.query(`SELECT * FROM reviews WHERE product_id = ${product}`);
-      ratingsQuery.rows.forEach((review) => {
-        metaData.ratings[review.rating] ++;
+      const ratingsQuery = await pool.query(`
+      SELECT rating, COUNT(*) AS count
+      FROM reviews
+      WHERE product_id = ${product}
+      GROUP BY rating
+    `);
+      ratingsQuery.rows.forEach((row) => {
+        let rating = row.rating.toString();
+        metaData.ratings[rating] = row.count.toString();
       });
+
       const recommendedYesQuery = await pool.query(`SELECT COUNT(*) FROM reviews WHERE product_id = ${product} AND Recommend = true`);
       metaData.recommend.true = recommendedYesQuery.rows[0].count;
       const recommendedNoQuery = await pool.query(`SELECT COUNT(*) FROM reviews WHERE product_id = ${product} AND Recommend = false`);
       metaData.recommend.false = recommendedNoQuery.rows[0].count;
-      const characteristicsQuery = await pool.query(`SELECT * FROM characteristics WHERE product_id = ${product}`);
+      const characteristicsQuery = await pool.query(`SELECT c.name, cv.characteristic_id, AVG(cv.value) AS average
+      FROM characteristics AS c
+      JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
+      WHERE c.product_id = ${product}
+      GROUP BY c.name, cv.characteristic_id`);
+
       characteristicsQuery.rows.forEach((char) => {
-        metaData.characteristics[char.name] = 0;
+        metaData.characteristics[char.name] = {
+          id: char.characteristic_id,
+          value: char.average
+        };
       });
-      // const charValuesQuery = await pool.query(`SELECT * FROM characteristics_values WHERE product_id = ${product}`);
+
       return metaData;
     } catch (error) {
       console.error('Error querying table:', error);
+    }
+  },
+  addReview: async (review) => {
+    console.log('dbreview', review);
+  },
+  addHelpful: async (review) => {
+    try {
+      const helpfulQuery = await pool.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE id = ${review}`);
+    } catch (error) {
+      console.error('Error updating entry:', error);
     }
   },
   getReview: async (review) => {
     try {
       const getQuery = await pool.query(`SELECT * FROM reviews WHERE id = ${review}`);
       return getQuery.rows[0];
-    } catch (error) {
-      console.error('Error updating entry:', error);
-    }
-  },
-  addHelpful: async (review) => {
-    try {
-      const helpfulQuery = await pool.query(`UPDATE reviews SET helpfulness = helpfulness + 1 WHERE id = ${review}`);
     } catch (error) {
       console.error('Error updating entry:', error);
     }

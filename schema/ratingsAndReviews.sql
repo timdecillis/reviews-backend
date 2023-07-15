@@ -25,7 +25,7 @@ CREATE TABLE Characteristics (
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS Characteristics_Values;
+DROP TABLE IF EXISTS Characteristic_Values;
 
 CREATE TABLE Characteristics_Values (
   id INTEGER NULL DEFAULT NULL,

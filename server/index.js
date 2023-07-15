@@ -36,8 +36,9 @@ router.get('/meta', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
-  addReview(req)
+router.post('/:review_id', (req, res) => {
+  let {review_id} = req.params;
+  addReview(review)
     .then(() => {
       res.status(201).send();
     })
@@ -47,9 +48,8 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:review_id/helpful', (req, res) => {
-  let review = req.params.review_id;
-  console.log('REVIEW', review);
-  addHelpful(review)
+  let {review_id} = req.params;
+  addHelpful(review_id)
     .then(() => {
       res.status(204).send();
     })
@@ -59,9 +59,8 @@ router.put('/:review_id/helpful', (req, res) => {
 });
 
 router.get('/:review_id/', (req, res) => {
-  let review = req.params.review_id;
-  console.log('REVIEW', review);
-  getReview(review)
+  let {review_id} = req.params;
+  getReview(review_id)
     .then((review) => {
       res.status(200).send(review);
     })
