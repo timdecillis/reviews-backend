@@ -5,12 +5,13 @@ const router = require('express').Router();
 const morgan = require('morgan');
 const {getReviews, getReviewMeta, addReview, addHelpful} = require('./database');
 
-app.use(morgan('common'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use('/reviews', router);
 
 router.get('/', (req, res)=> {
-  var {product_id, sort, count, page} = req.query
+  // eslint-disable-next-line camelcase
+  let {product_id, sort, count, page} = req.query;
   page = page || 1;
   count = count || 5;
   sort = sort || 'relevant';
@@ -23,18 +24,10 @@ router.get('/', (req, res)=> {
     });
 });
 
-// router.get('/?product_id', ({product_id} = req.params, res)=> {
-//   getReviews()
-//     .then((reviews) => {
-//       res.status(200).send(product_id);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
-
 router.get('/meta', (req, res) => {
-  getReviewMeta()
+  // eslint-disable-next-line camelcase
+  let {product_id} = req.query;
+  getReviewMeta(product_id)
     .then((metaData) => {
       res.status(200).send(metaData);
     })
@@ -53,8 +46,10 @@ router.post('/', (req, res) => {
     });
 });
 
-router.put('/', (req, res) => {
-  addHelpful()
+router.put('/:review_id/helpful', (req, res) => {
+  let review = req.params.review_id;
+  console.log('REVIEW', review);
+  addHelpful(review)
     .then(() => {
       res.status(204).send();
     })
