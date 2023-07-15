@@ -10,13 +10,13 @@ app.use(express.json());
 app.use('/reviews', router);
 
 router.get('/', (req, res)=> {
-  const {product_id, sort, count, page} = req.query
-  sort = sort || 'relevant';
+  var {product_id, sort, count, page} = req.query
   page = page || 1;
   count = count || 5;
-  getReviews()
+  sort = sort || 'relevant';
+  getReviews(product_id, page, count, sort)
     .then((reviews) => {
-      res.status(200).send(product_id);
+      res.status(200).send(reviews);
     })
     .catch((err) => {
       console.log(err);
@@ -32,16 +32,6 @@ router.get('/', (req, res)=> {
 //       console.log(err);
 //     });
 // });
-
-router.get('/?product_id', ({product_id} = req.params, res)=> {
-  getReviews()
-    .then((reviews) => {
-      res.status(200).send(product_id);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
 
 router.get('/meta', (req, res) => {
   getReviewMeta()

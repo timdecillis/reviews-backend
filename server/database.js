@@ -1,5 +1,29 @@
+const fs = require('fs');
+const path = require('path');
+const { Pool, Client } = require('pg');
+const { dbConfig } = require('../config.js');
+
+const client = new Client(dbConfig);
+
 module.exports = {
-  getReviews: (product, params) => {
+  getReviews: async (product, page, count, sort) => {
+    console.log('product', product)
+    try {
+      await client.connect();
+      console.log('Connected to the database.');
+      const query =
+      `SELECT * FROM reviews WHERE product_id = ${product} LIMIT ${count};`;
+      const result = await client.query(query);
+      console.log(`Querying database.`);
+      await console.log('ROWS', result)
+      // return result.rows;
+    } catch (error) {
+      console.error('Error querying table:', error);
+    } finally {
+      await client.end();
+      console.log('Disconnected from the database.');
+    }
+
     //query the database, using the params to refine
   },
   getReviewMeta: (product) => {
