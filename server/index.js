@@ -5,12 +5,12 @@ const router = require('express').Router();
 const morgan = require('morgan');
 const {getReviews, getReviewMeta, addReview, addHelpful} = require('./database');
 
-app.use(morgan('common'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use('/reviews', router);
 
 router.get('/', (req, res)=> {
-  var {product_id, sort, count, page} = req.query
+  let {product_id, sort, count, page} = req.query;
   page = page || 1;
   count = count || 5;
   sort = sort || 'relevant';
@@ -23,17 +23,8 @@ router.get('/', (req, res)=> {
     });
 });
 
-// router.get('/?product_id', ({product_id} = req.params, res)=> {
-//   getReviews()
-//     .then((reviews) => {
-//       res.status(200).send(product_id);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
-
 router.get('/meta', (req, res) => {
+  let {product_id} = req.query;
   getReviewMeta()
     .then((metaData) => {
       res.status(200).send(metaData);

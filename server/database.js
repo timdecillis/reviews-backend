@@ -3,30 +3,32 @@ const path = require('path');
 const { Pool, Client } = require('pg');
 const { dbConfig } = require('../config.js');
 
-const client = new Client(dbConfig);
+const pool = new Pool(dbConfig);
 
 module.exports = {
   getReviews: async (product, page, count, sort) => {
-    console.log('product', product)
     try {
-      await client.connect();
-      console.log('Connected to the database.');
       const query =
       `SELECT * FROM reviews WHERE product_id = ${product} LIMIT ${count};`;
-      const result = await client.query(query);
-      console.log(`Querying database.`);
-      await console.log('ROWS', result)
-      // return result.rows;
+      const result = await pool.query(query);
+      return result.rows;
     } catch (error) {
       console.error('Error querying table:', error);
     } finally {
-      await client.end();
       console.log('Disconnected from the database.');
     }
-
-    //query the database, using the params to refine
   },
-  getReviewMeta: (product) => {
+  getReviewMeta: async (product) => {
+    try {
+      const query =
+      `SELECT COUNT(*) FROM reviews WHERE rating = '3' LIMIT 5;`;
+      const result = await pool.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error('Error querying table:', error);
+    } finally {
+      console.log('Disconnected from the database.');
+    }
     // query the reviews table and the characteristics_values table using the product id,
     // performing logic to count the total of each star review and the helpfulness, and
     // add the characteristics_values
