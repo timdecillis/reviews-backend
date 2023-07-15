@@ -3,7 +3,7 @@ const app = express();
 const db = require('./database.js');
 const router = require('express').Router();
 const morgan = require('morgan');
-const {getReviews, getReviewMeta, addReview, addHelpful} = require('./database');
+const {getReviews, getReviewMeta, addReview, addHelpful, getReview} = require('./database');
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -52,6 +52,18 @@ router.put('/:review_id/helpful', (req, res) => {
   addHelpful(review)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+router.get('/:review_id/', (req, res) => {
+  let review = req.params.review_id;
+  console.log('REVIEW', review);
+  getReview(review)
+    .then((review) => {
+      res.status(200).send(review);
     })
     .catch((err) => {
       console.log(err);

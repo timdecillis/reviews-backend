@@ -7,15 +7,28 @@ const pool = new Pool(dbConfig);
 
 module.exports = {
   getReviews: async (product, page, count, sort) => {
-    try {
-      const query =
-        `SELECT * FROM reviews WHERE product_id = ${product} LIMIT ${count};`;
-      const result = await pool.query(query);
-      return result.rows;
-    } catch (error) {
-      console.error('Error querying table:', error);
+    page = (page - 1) * count;
+    if (sort === 'relevant' || sort === 'helpful') {
+      try {
+        const query =
+          `SELECT * FROM reviews WHERE product_id = ${product} ORDER BY helpfulness DESC LIMIT ${count} OFFSET ${page}`;
+        const result = await pool.query(query);
+        return result.rows;
+      } catch (error) {
+        console.error('Error querying table:', error);
+      }
+    } else if (sort === 'newest') {
+      try {
+        const query =
+          `SELECT * FROM reviews WHERE product_id = ${product} LIMIT ${count} OFFSET ${page}`;
+        const result = await pool.query(query);
+        return result.rows;
+      } catch (error) {
+        console.error('Error querying table:', error);
+      }
     }
   },
+
   getReviewMeta: async (product) => {
 
     let metaData = {
@@ -46,14 +59,19 @@ module.exports = {
       characteristicsQuery.rows.forEach((char) => {
         metaData.characteristics[char.name] = 0;
       });
-      const charValuesQuery = await pool.query(`SELECT * FROM characteristics_values WHERE product_id = ${product}`);
+      // const charValuesQuery = await pool.query(`SELECT * FROM characteristics_values WHERE product_id = ${product}`);
       return metaData;
     } catch (error) {
       console.error('Error querying table:', error);
     }
   },
-  addReview: async (review) => {
-    // add the review to the db, using the product id as a reference
+  getReview: async (review) => {
+    try {
+      const getQuery = await pool.query(`SELECT * FROM reviews WHERE id = ${review}`);
+      return getQuery.rows[0];
+    } catch (error) {
+      console.error('Error updating entry:', error);
+    }
   },
   addHelpful: async (review) => {
     try {
