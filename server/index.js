@@ -3,7 +3,7 @@ const app = express();
 const db = require('./database.js');
 const router = require('express').Router();
 const morgan = require('morgan');
-const {getReviews, getReviewMeta, addReview, addHelpful} = require('./database');
+const {getReviews, getReviewMeta, addReview, addHelpful, getReview} = require('./database');
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -37,7 +37,8 @@ router.get('/meta', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  addReview(req)
+  let review = req.body;
+  addReview(review)
     .then(() => {
       res.status(201).send();
     })
@@ -47,11 +48,21 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:review_id/helpful', (req, res) => {
-  let review = req.params.review_id;
-  console.log('REVIEW', review);
-  addHelpful(review)
+  let {review_id} = req.params;
+  addHelpful(review_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+router.get('/:review_id/', (req, res) => {
+  let {review_id} = req.params;
+  getReview(review_id)
+    .then((review) => {
+      res.status(200).send(review);
     })
     .catch((err) => {
       console.log(err);

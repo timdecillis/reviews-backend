@@ -6,21 +6,18 @@
 
 module.exports = {
   env: {
-    'e6': true
+    'es6': true,
+    'node': true
   },
   parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 6,
-    ecmaFeatures: {
-      'jsx': true
-    }
+    ecmaVersion: 8
   },
   rules: {
     /* Indentation */
     'no-mixed-spaces-and-tabs': 2,
     'indent': [2, 2],
     /* Variable names */
-    'camelcase': 2,
+    // 'camelcase': 2,
     /* Language constructs */
     'curly': 2,
     'eqeqeq': [2, 'smart'],

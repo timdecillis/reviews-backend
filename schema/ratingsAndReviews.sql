@@ -25,9 +25,9 @@ CREATE TABLE Characteristics (
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS Characteristics_Values;
+DROP TABLE IF EXISTS Characteristic_Values;
 
-CREATE TABLE Characteristics_Values (
+CREATE TABLE Characteristic_Values (
   id INTEGER NULL DEFAULT NULL,
   characteristic_id INTEGER NOT NULL DEFAULT NULL,
   review_id INTEGER NOT NULL DEFAULT NULL,
@@ -44,6 +44,6 @@ CREATE TABLE Reviews_Photos (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE Characteristics Values ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
+ALTER TABLE Characteristic_Values ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
 ALTER TABLE Characteristics Values ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
 ALTER TABLE Reviews Photos ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
