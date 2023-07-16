@@ -45,5 +45,5 @@ CREATE TABLE Reviews_Photos (
 );
 
 ALTER TABLE Characteristic_Values ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
-ALTER TABLE Characteristics Values ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
-ALTER TABLE Reviews Photos ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
+ALTER TABLE Characteristic_Values ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
+ALTER TABLE Reviews_Photos ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
