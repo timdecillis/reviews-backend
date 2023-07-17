@@ -44,6 +44,10 @@ CREATE TABLE Reviews_Photos (
   PRIMARY KEY (id)
 );
 
+CREATE INDEX idx_product_id_date ON reviews (product_id, date DESC);
+CREATE INDEX idx_product_id ON characteristics (product_id);
+CREATE INDEX characteristic_id ON Characteristic_Values (characteristic_id);
+
 ALTER TABLE Characteristic_Values ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
 ALTER TABLE Characteristic_Values ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
 ALTER TABLE Reviews_Photos ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);

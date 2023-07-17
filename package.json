@@ -5,7 +5,7 @@
   "private": false,
   "scripts": {
     "test": "jest",
-    "server-dev": "npx nodemon --watch server server/index.js",
+    "server-dev": "npx nodemon --watch server server/server.js",
     "load": "node schema/load.js"
   },
   "keywords": [],
