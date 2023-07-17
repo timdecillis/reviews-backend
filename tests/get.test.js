@@ -1,5 +1,6 @@
 const request = require('supertest');
 const baseURL = 'localhost:3000/';
+const app = require ('../server/app.js');
 
 describe('GET, /reviews', () => {
   let response;
@@ -16,7 +17,7 @@ describe('GET, /reviews', () => {
     expect(response.body.error).toBeUndefined();
   });
   it ('should return 5 reviews by default', () => {
-    expect(response._body.results.length).toBe(5);
+    expect(response.body.results.length).toBe(5);
   });
 });
 
@@ -35,9 +36,9 @@ describe('GET, /reviews/meta', () => {
     expect(response.body.error).toBeUndefined();
   });
   it ('should contain a correct properties ', () => {
-    expect(response._body).toHaveProperty('product_id');
-    expect(response._body).toHaveProperty('ratings');
-    expect(response._body).toHaveProperty('recommend');
+    expect(response.body).toHaveProperty('product_id');
+    expect(response.body).toHaveProperty('ratings');
+    expect(response.body).toHaveProperty('recommend');
   });
 });
 
