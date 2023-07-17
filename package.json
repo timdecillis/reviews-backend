@@ -4,6 +4,7 @@
   "description": "",
   "private": false,
   "scripts": {
+    "test": "jest",
     "server-dev": "npx nodemon --watch server server/index.js",
     "load": "node schema/load.js"
   },
