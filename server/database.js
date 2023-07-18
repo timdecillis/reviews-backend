@@ -8,94 +8,55 @@ const pool = new Pool(dbConfig);
 module.exports = {
   getReviews: async (product, page, count, sort) => {
     page = (page - 1) * count;
-    if (sort === 'relevant' || sort === 'helpful') {
-      try {
-        const query =
-          `SELECT * FROM reviews WHERE product_id = ${product} ORDER BY helpfulness DESC LIMIT ${count} OFFSET ${page}`;
-        const result = await pool.query(query);
+    if ((sort === 'helpful') || (sort === 'relevant')) {
+      sort = 'helpfulness';
+    }
+    if (sort === 'newest') {
+      sort = 'date';
+    }
 
-        const reviewIds = result.rows.map((row) => row.id);
-        const photosQuery = await pool.query(`
+    try {
+      const query =
+        `SELECT * FROM reviews WHERE product_id = ${product} ORDER BY ${sort} DESC LIMIT ${count} OFFSET ${page}`;
+      const result = await pool.query(query);
+
+      const reviewIds = result.rows.map((row) => row.id);
+      const photosQuery = await pool.query(`
           SELECT * FROM reviews_photos WHERE review_id IN (${reviewIds.join(',')})
         `);
-        const photosByReviewId = photosQuery.rows.reduce((acc, photo) => {
-          if (!acc[photo.review_id]) {
-            acc[photo.review_id] = [];
-          }
-          acc[photo.review_id].push({
-            id: photo.id,
-            url: photo.url
-          });
-          return acc;
-        }, {});
+      const photosByReviewId = photosQuery.rows.reduce((acc, photo) => {
+        if (!acc[photo.review_id]) {
+          acc[photo.review_id] = [];
+        }
+        acc[photo.review_id].push({
+          id: photo.id,
+          url: photo.url
+        });
+        return acc;
+      }, {});
 
-        return {
-          product: product,
-          page: Math.ceil((page + 1) / count),
-          count: parseInt(count),
-          results: result.rows.map((row) => {
-            const photos = photosByReviewId[row.id] || [];
-            return {
-              review_id: row.id,
-              rating: Math.floor(parseInt(row.rating)),
-              summary: row.summary,
-              recommend: row.recommend,
-              response: row.response,
-              body: row.body,
-              date: new Date(Number(row.date)).toISOString(),
-              reviewer_name: row.name,
-              helpfulness: row.helpfulness,
-              photos: photos
-            };
-          })
-        };
-      } catch (error) {
-        console.error('Error querying table:', error);
-      }
-    } else if (sort === 'newest') {
-      try {
-        const query =
-          `SELECT * FROM reviews WHERE product_id = ${product} ORDER BY date DESC LIMIT ${count} OFFSET ${page}`;
-        const result = await pool.query(query);
-
-        const reviewIds = result.rows.map((row) => row.id);
-        const photosQuery = await pool.query(`
-          SELECT * FROM reviews_photos WHERE review_id IN (${reviewIds.join(',')})
-        `);
-        const photosByReviewId = photosQuery.rows.reduce((acc, photo) => {
-          if (!acc[photo.review_id]) {
-            acc[photo.review_id] = [];
-          }
-          acc[photo.review_id].push({
-            id: photo.id,
-            url: photo.url
-          });
-          return acc;
-        }, {});
-
-        return {
-          product: product,
-          page: Math.ceil((page + 1) / count),
-          count: parseInt(count),
-          results: result.rows.map((row) => {
-            const photos = photosByReviewId[row.id] || [];
-            return {
-              review_id: row.id,
-              rating: Math.floor(parseInt(row.rating)),
-              summary: row.summary,
-              recommend: row.recommend,
-              response: row.response,
-              body: row.body,
-              date: new Date(Number(row.date)).toISOString(),
-              reviewer_name: row.name,
-              helpfulness: row.helpfulness,
-              photos: photos
-            };
-          })
-        };
-      } catch (error) {
-        console.error('Error querying table:', error);
-      }
+      return {
+        product: product,
+        page: Math.ceil((page + 1) / count),
+        count: parseInt(count),
+        results: result.rows.map((row) => {
+          const photos = photosByReviewId[row.id] || [];
+          return {
+            review_id: row.id,
+            rating: Math.floor(parseInt(row.rating)),
+            summary: row.summary,
+            recommend: row.recommend,
+            response: row.response,
+            body: row.body,
+            date: new Date(Number(row.date)).toISOString(),
+            reviewer_name: row.name,
+            helpfulness: row.helpfulness,
+            photos: photos
+          };
+        })
+      };
+    } catch (error) {
+      console.error('Error querying table:', error);
     }
   },
 
