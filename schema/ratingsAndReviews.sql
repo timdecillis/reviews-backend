@@ -48,6 +48,11 @@ CREATE INDEX idx_product_id_date ON reviews (product_id, date DESC);
 CREATE INDEX idx_product_id ON characteristics (product_id);
 CREATE INDEX characteristic_id ON Characteristic_Values (characteristic_id);
 
+CREATE INDEX idx_review_id ON Characteristic_Values (review_id);
+CREATE INDEX idx_review_id_photos ON Reviews_Photos (review_id);
+CREATE INDEX idx_product_id_helpful ON reviews (product_id, helpfulness DESC);
+CREATE INDEX idx_product_id_recommend ON reviews (product_id, recommend);
+
 ALTER TABLE Characteristic_Values ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
 ALTER TABLE Characteristic_Values ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
 ALTER TABLE Reviews_Photos ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);

@@ -6,7 +6,7 @@ describe('GET, /reviews', () => {
   let response;
   beforeAll(async () => {
     response = await request(baseURL).get('reviews/?product_id=10467');
-  }, 80000);
+  });
   it('should return JSON content type', () => {
     expect(response.headers['content-type']).toMatch(/application\/json/);
   });
@@ -25,7 +25,7 @@ describe('GET, /reviews/meta', () => {
   let response;
   beforeAll(async () => {
     response = await request(baseURL).get('reviews/meta/?product_id=10467');
-  }, 200000);
+  });
   it('should return JSON content type', () => {
     expect(response.headers['content-type']).toMatch(/application\/json/);
   });
@@ -38,7 +38,7 @@ describe('GET, /reviews/meta', () => {
   it ('should contain a correct properties ', () => {
     expect(response.body).toHaveProperty('product_id');
     expect(response.body).toHaveProperty('ratings');
-    expect(response.body).toHaveProperty('recommend');
+    expect(response.body).toHaveProperty('recommended');
   });
 });
 
