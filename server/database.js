@@ -110,7 +110,7 @@ module.exports = {
         '4.00': '0',
         '5.00': '0'
       },
-      recommend: {
+      recommended: {
         true: 0,
         false: 0
       },
@@ -132,9 +132,9 @@ module.exports = {
       });
 
       const recommendedYesQuery = await pool.query(`SELECT COUNT(*) FROM reviews WHERE product_id = ${product} AND Recommend = true`);
-      metaData.recommend.true = recommendedYesQuery.rows[0].count;
+      metaData.recommended.true = recommendedYesQuery.rows[0].count;
       const recommendedNoQuery = await pool.query(`SELECT COUNT(*) FROM reviews WHERE product_id = ${product} AND Recommend = false`);
-      metaData.recommend.false = recommendedNoQuery.rows[0].count;
+      metaData.recommended.false = recommendedNoQuery.rows[0].count;
       const characteristicsQuery = await pool.query(`SELECT c.name, cv.characteristic_id, AVG(cv.value) AS average
       FROM characteristics AS c
       JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
