@@ -100,16 +100,9 @@ module.exports = {
   },
 
   getReviewMeta: async (product) => {
-
     let metaData = {
       product_id: product,
-      ratings: {
-        '1.00': '0',
-        '2.00': '0',
-        '3.00': '0',
-        '4.00': '0',
-        '5.00': '0'
-      },
+      ratings: {},
       recommended: {
         true: 0,
         false: 0
@@ -117,35 +110,38 @@ module.exports = {
       characteristics: {}
     };
 
-    charIds = [];
-
     try {
-      const ratingsQuery = await pool.query(`
-      SELECT rating, COUNT(*) AS count
-      FROM reviews
-      WHERE product_id = ${product}
-      GROUP BY rating
-    `);
-      ratingsQuery.rows.forEach((row) => {
-        let rating = row.rating.toString();
-        metaData.ratings[rating] = row.count.toString();
-      });
+      const query = await pool.query(`
+        SELECT
+          r.rating,
+          COUNT(*) AS count,
+          SUM(CASE WHEN r.recommend THEN 1 ELSE 0 END) AS recommended_true,
+          SUM(CASE WHEN NOT r.recommend THEN 1 ELSE 0 END) AS recommended_false,
+          c.name,
+          c.id AS characteristic_id,
+          AVG(cv.value) AS average
+        FROM reviews AS r
+        LEFT JOIN characteristics AS c ON r.product_id = c.product_id
+        LEFT JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
+        WHERE r.product_id = ${product}
+        GROUP BY
+          r.rating,
+          c.name,
+          c.id
+      `);
 
-      const recommendedYesQuery = await pool.query(`SELECT COUNT(*) FROM reviews WHERE product_id = ${product} AND Recommend = true`);
-      metaData.recommended.true = recommendedYesQuery.rows[0].count;
-      const recommendedNoQuery = await pool.query(`SELECT COUNT(*) FROM reviews WHERE product_id = ${product} AND Recommend = false`);
-      metaData.recommended.false = recommendedNoQuery.rows[0].count;
-      const characteristicsQuery = await pool.query(`SELECT c.name, cv.characteristic_id, AVG(cv.value) AS average
-      FROM characteristics AS c
-      JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
-      WHERE c.product_id = ${product}
-      GROUP BY c.name, cv.characteristic_id`);
+      query.rows.forEach((row) => {
+        const rating = row.rating.toString();
+        metaData.ratings[rating.slice(0, 1)] = row.count.toString();
+        metaData.recommended.true = parseInt(row.recommended_true);
+        metaData.recommended.false = parseInt(row.recommended_false);
 
-      characteristicsQuery.rows.forEach((char) => {
-        metaData.characteristics[char.name] = {
-          id: char.characteristic_id,
-          value: char.average
-        };
+        if (row.name && row.characteristic_id && row.average) {
+          metaData.characteristics[row.name] = {
+            id: row.characteristic_id,
+            value: row.average
+          };
+        }
       });
 
       return metaData;
@@ -153,6 +149,7 @@ module.exports = {
       console.error('Error querying table:', error);
     }
   },
+
   addReview: async (review) => {
     let {product_id, rating, summary, body, recommend, name, email, photos, characteristics} = review;
     try {
