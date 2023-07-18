@@ -103,65 +103,56 @@ module.exports = {
     try {
       const query = await pool.query(`
         SELECT
-          rating::text,
-          COUNT(*)::text AS count
-        FROM reviews AS r
-        WHERE r.product_id = ${product}
-        GROUP BY rating
-        ORDER BY rating ASC;
-      `);
+          json_object_agg(CAST(rating AS INTEGER), count) AS ratings
+        FROM (
+          SELECT
+            rating::integer,
+            COUNT(*)::text AS count
+          FROM reviews AS r
+          WHERE r.product_id = ${product}
+          GROUP BY rating
+          ORDER BY rating ASC
+        ) AS subquery;
 
-      const ratingRows = query.rows;
-      const ratings = {};
-      ratingRows.forEach((row) => {
-        const rating = row.rating;
-        ratings[rating] = row.count;
-      });
-
-      const recommendedQuery = await pool.query(`
         SELECT
-          recommend,
-          COUNT(*)::text AS count
-        FROM reviews AS r
-        WHERE r.product_id = ${product}
-        GROUP BY recommend;
-      `);
+          json_object_agg(recommend, count) AS recommended
+        FROM (
+          SELECT
+            recommend,
+            COUNT(*)::text AS count
+          FROM reviews AS r
+          WHERE r.product_id = ${product}
+          GROUP BY recommend
+        ) AS subquery;
 
-      const recommendedRows = recommendedQuery.rows;
-      const recommended = {};
-      recommendedRows.forEach((row) => {
-        const recommendValue = row.recommend;
-        recommended[recommendValue] = row.count;
-      });
-
-      const characteristicsQuery = await pool.query(`
         SELECT
-          c.name,
-          c.id AS characteristic_id,
-          AVG(cv.value)::text AS average
-        FROM characteristics AS c
-        JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
-        WHERE c.product_id = ${product}
-        GROUP BY c.name, c.id;
+          json_object_agg(name, json_build_object('id', characteristic_id, 'value', average)) AS characteristics
+        FROM (
+          SELECT
+            c.name,
+            c.id AS characteristic_id,
+            AVG(cv.value)::text AS average
+          FROM characteristics AS c
+          JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
+          WHERE c.product_id = ${product}
+          GROUP BY c.name, c.id
+        ) AS subquery;
       `);
 
-      const characteristicsRows = characteristicsQuery.rows;
-      const characteristics = {};
-      characteristicsRows.forEach((row) => {
-        const name = row.name;
-        const characteristicId = row.characteristic_id;
-        const average = row.average;
-        characteristics[name] = {
-          id: characteristicId,
-          value: average
-        };
-      });
+      const ratingQueryResult = query[0].rows[0];
+      const ratings = ratingQueryResult.ratings || {};
+
+      const recommendedQueryResult = query[1].rows[0];
+      const recommended = recommendedQueryResult.recommended || {};
+
+      const characteristicsQueryResult = query[2].rows[0];
+      const characteristics = characteristicsQueryResult.characteristics || {};
 
       const metaData = {
         product_id: product,
-        ratings: ratings,
-        recommended: recommended,
-        characteristics: characteristics
+        ratings,
+        recommended,
+        characteristics
       };
 
       return metaData;
