@@ -6,7 +6,10 @@
   "scripts": {
     "test": "jest",
     "reviews-stress": "k6 run tests/stress-tests/getReviews.js",
+    "reviews-stress-rps": "k6 run tests/stress-tests/getReviewsRPS.js",
+    "meta-stress-rps": "k6 run tests/stress-tests/getReviewsMetaRPS.js",
     "meta-stress": "k6 run tests/stress-tests/getReviewsMeta.js",
+
     "server-dev": "npx nodemon --watch server server/server.js",
     "load": "node schema/load.js"
   },

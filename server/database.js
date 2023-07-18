@@ -100,49 +100,69 @@ module.exports = {
   },
 
   getReviewMeta: async (product) => {
-    let metaData = {
-      product_id: product,
-      ratings: {},
-      recommended: {
-        true: 0,
-        false: 0
-      },
-      characteristics: {}
-    };
-
     try {
       const query = await pool.query(`
         SELECT
-          r.rating,
-          COUNT(*) AS count,
-          SUM(CASE WHEN r.recommend THEN 1 ELSE 0 END) AS recommended_true,
-          SUM(CASE WHEN NOT r.recommend THEN 1 ELSE 0 END) AS recommended_false,
-          c.name,
-          c.id AS characteristic_id,
-          AVG(cv.value) AS average
+          rating::text,
+          COUNT(*)::text AS count
         FROM reviews AS r
-        LEFT JOIN characteristics AS c ON r.product_id = c.product_id
-        LEFT JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
         WHERE r.product_id = ${product}
-        GROUP BY
-          r.rating,
-          c.name,
-          c.id
+        GROUP BY rating
+        ORDER BY rating ASC;
       `);
 
-      query.rows.forEach((row) => {
-        const rating = row.rating.toString();
-        metaData.ratings[rating.slice(0, 1)] = row.count.toString();
-        metaData.recommended.true = parseInt(row.recommended_true);
-        metaData.recommended.false = parseInt(row.recommended_false);
-
-        if (row.name && row.characteristic_id && row.average) {
-          metaData.characteristics[row.name] = {
-            id: row.characteristic_id,
-            value: row.average
-          };
-        }
+      const ratingRows = query.rows;
+      const ratings = {};
+      ratingRows.forEach((row) => {
+        const rating = row.rating;
+        ratings[rating] = row.count;
       });
+
+      const recommendedQuery = await pool.query(`
+        SELECT
+          recommend,
+          COUNT(*)::text AS count
+        FROM reviews AS r
+        WHERE r.product_id = ${product}
+        GROUP BY recommend;
+      `);
+
+      const recommendedRows = recommendedQuery.rows;
+      const recommended = {};
+      recommendedRows.forEach((row) => {
+        const recommendValue = row.recommend;
+        recommended[recommendValue] = row.count;
+      });
+
+      const characteristicsQuery = await pool.query(`
+        SELECT
+          c.name,
+          c.id AS characteristic_id,
+          AVG(cv.value)::text AS average
+        FROM characteristics AS c
+        JOIN characteristic_values AS cv ON c.id = cv.characteristic_id
+        WHERE c.product_id = ${product}
+        GROUP BY c.name, c.id;
+      `);
+
+      const characteristicsRows = characteristicsQuery.rows;
+      const characteristics = {};
+      characteristicsRows.forEach((row) => {
+        const name = row.name;
+        const characteristicId = row.characteristic_id;
+        const average = row.average;
+        characteristics[name] = {
+          id: characteristicId,
+          value: average
+        };
+      });
+
+      const metaData = {
+        product_id: product,
+        ratings: ratings,
+        recommended: recommended,
+        characteristics: characteristics
+      };
 
       return metaData;
     } catch (error) {
