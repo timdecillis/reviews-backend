@@ -8,7 +8,7 @@ export const options = {
 };
 
 export default () => {
-  const res = http.get(`${baseURL}reviews/?product_id=234`);
+  const res = http.get(`${baseURL}reviews/?product_id=900500`);
   check(res, {'status was 200': (r) => r.status === 200});
   sleep(1);
 };

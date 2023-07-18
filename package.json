@@ -5,7 +5,8 @@
   "private": false,
   "scripts": {
     "test": "jest",
-    "stress": "k6 run tests/stress-test.js",
+    "reviews-stress": "k6 run tests/stress-tests/getReviews.js",
+    "meta-stress": "k6 run tests/stress-tests/getReviewsMeta.js",
     "server-dev": "npx nodemon --watch server server/server.js",
     "load": "node schema/load.js"
   },
