@@ -17,16 +17,17 @@ This Express server application provides the backend architecture to support the
 ```
 git clone https://github.com/timdecillis/reviews-backend
 ```
+2. Copy config.example.js, rename to config.js, and update the file with your database information.
 
-2. Install dependencies
+3. Install dependencies
 ```
 npm install
 ```
-3. Run the server
+4. Run the server
 ```
 npm run server-dev
 ```
-4. Direct all requests to the base URL localhost:3000 + specific request endpoint
+5. Direct all requests to the base URL localhost:3000 + specific request endpoint
 
 ## Tech Stack
 
