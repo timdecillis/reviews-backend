@@ -23,13 +23,10 @@ const createTables = async () =>{
   const client = new Client(dbConfig);
 
   try {
-
     await client.connect();
     console.log('Connected to the database.');
-
     await client.query(queries.createTables);
-    console.log(`Tables created successfully.`);
-
+    console.log('Tables created successfully.');
     await client.query(queries.chars);
     await client.query(queries.reviews);
     await client.query(queries.reviews_photos);
@@ -43,6 +40,6 @@ const createTables = async () =>{
     await client.end();
     console.log('Disconnected from the database.');
   }
-}
+};
 
 createTables();

@@ -41,4 +41,3 @@ describe('GET, /reviews/meta', () => {
     expect(response.body).toHaveProperty('recommended');
   });
 });
-

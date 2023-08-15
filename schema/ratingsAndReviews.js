@@ -19,13 +19,13 @@ const ratingsAndReviewsSchema = new mongoose.Schema({
     total3: Number,
     total2: Number,
     total1: Number
-  }
+  },
   characteristics: [{
     Size: Number,
     Quality: Number,
     Comfort: Number,
     Quality: Number
-  }]
+  }],
   recommend: {
     yes: Number,
     no: Number

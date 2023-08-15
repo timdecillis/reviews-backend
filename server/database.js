@@ -102,10 +102,8 @@ module.exports = {
 
       const ratingQueryResult = query[0].rows[0];
       const ratings = ratingQueryResult.ratings || {};
-
       const recommendedQueryResult = query[1].rows[0];
       const recommended = recommendedQueryResult.recommended || {};
-
       const characteristicsQueryResult = query[2].rows[0];
       const characteristics = characteristicsQueryResult.characteristics || {};
 
